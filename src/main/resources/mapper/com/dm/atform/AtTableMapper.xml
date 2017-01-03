@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dm.atform.sqldao.AtTableMapper">
+	<resultMap id="BaseResultMap" type="com.dm.atform.model.AtTable">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="table_name" property="tableName" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="sort_field" property="sortField" jdbcType="VARCHAR" />
+		<result column="where_field" property="whereField" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="info" property="info" jdbcType="VARCHAR" />
+		<result column="seq" property="seq" jdbcType="INTEGER" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="create_user" property="createUser" jdbcType="VARCHAR" />
+		<result column="grid_name" property="gridName" jdbcType="VARCHAR" />
+		<result column="id_field" property="idField" jdbcType="VARCHAR"/>
+		<result column="pid" property="pId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="treeNodeMap" type="com.dm.cms.model.TreeNode">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="pid" property="pId" jdbcType="VARCHAR" />
+		<result column="grid_name" property="name" jdbcType="VARCHAR" />
+		<result column="type" property="s" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, table_name, status, sort_field, where_field, type, seq,
+		create_date, create_user,id_field,info,
+		grid_name,pid
+	</sql>
+	<sql id="tree_Column_List">
+		id, grid_name, pid , type
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from at_table_config
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByArgMap" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from at_table_config
+		where 1=1
+		<if test="model!=null">
+			<if test="model.tableName!=null and model.tableName!=''">
+				and table_name like concat('%',#{model.tableName},'%')
+			</if>
+			<if test="model.status!=null and model.status!=''">
+				and status = #{model.status}
+			</if>
+			<if test="model.pId!=null and model.pId!=''">
+				and ( pid = #{model.pId}
+				or id = #{model.pId} )
+			</if>
+			<if test="model.gridName!=null and model.gridName!=''">
+				and grid_name like concat('%',#{model.gridName},'%')
+			</if>
+		</if>
+		<if test="sort!=null and sort!=''">
+			order by ${sort}
+		</if>
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from at_table_config
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dm.atform.model.AtTable">
+		insert into at_table_config (id, table_name, status,
+		sort_field, where_field, type,
+		seq, create_date, create_user,id_field,info,
+		grid_name,pid)
+		values (#{id,jdbcType=VARCHAR}, #{tableName,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{sortField,jdbcType=VARCHAR}, #{whereField,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+		#{seq,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=VARCHAR},
+		#{idField,jdbcType=VARCHAR},
+		#{info,jdbcType=VARCHAR},
+		#{gridName,jdbcType=VARCHAR},#{pId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dm.atform.model.AtTable">
+		insert into at_table_config
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="tableName != null">
+				table_name,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="sortField != null">
+				sort_field,
+			</if>
+			<if test="whereField != null">
+				where_field,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="seq != null">
+				seq,
+			</if>
+			<if test="createDate != null">
+				create_date,
+			</if>
+			<if test="createUser != null">
+				create_user,
+			</if>
+			<if test="gridName != null">
+				grid_name,
+			</if>
+			<if test="idField ! =null">
+				id_field,
+			</if>
+			<if test="info != null">
+				info,
+			</if>
+			<if test="pId!=null">
+				pid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="tableName != null">
+				#{tableName,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="sortField != null">
+				#{sortField,jdbcType=VARCHAR},
+			</if>
+			<if test="whereField != null">
+				#{whereField,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="seq != null">
+				#{seq,jdbcType=INTEGER},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				#{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="gridName != null">
+				#{gridName,jdbcType=VARCHAR},
+			</if>
+			<if test="idField !=null">
+				#{idField,jdbcType=VARCHAR},
+			</if>
+			<if test="info != null">
+				#{info,jdbcType=VARCHAR},
+			</if>
+			<if test="pId!=null">
+				#{pId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dm.atform.model.AtTable">
+		update at_table_config
+		<set>
+			<if test="tableName != null">
+				table_name = #{tableName,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="sortField != null">
+				sort_field = #{sortField,jdbcType=VARCHAR},
+			</if>
+			<if test="whereField != null">
+				where_field = #{whereField,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="seq != null">
+				seq = #{seq,jdbcType=INTEGER},
+			</if>
+			<if test="createDate != null">
+				create_date = #{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createUser != null">
+				create_user = #{createUser,jdbcType=VARCHAR},
+			</if>
+			<if test="gridName != null">
+				grid_name = #{gridName,jdbcType=VARCHAR},
+			</if>
+			<if test="idField !=null">
+				id_field = #{idField,jdbcType=VARCHAR},
+			</if>
+			<if test="info != null">
+				info = #{info,jdbcType=VARCHAR},
+			</if>
+			<if test="pId!=null">
+				pid = #{pId,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dm.atform.model.AtTable">
+		update at_table_config
+		set table_name = #{tableName,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		sort_field = #{sortField,jdbcType=VARCHAR},
+		where_field = #{whereField,jdbcType=VARCHAR},
+		type = #{type,jdbcType=VARCHAR},
+		seq = #{seq,jdbcType=INTEGER},
+		create_date = #{createDate,jdbcType=TIMESTAMP},
+		create_user = #{createUser,jdbcType=VARCHAR},
+		grid_name = #{gridName,jdbcType=VARCHAR},
+		id_field = #{idField,jdbcType=VARCHAR},
+		info = #{info,jdbcType=VARCHAR},
+		pid = #{pId,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<select id="selectTreeNode" resultMap="treeNodeMap">
+		select
+		<include refid="tree_Column_List" />
+		from at_table_config
+		<where>
+			<if test="pId!=null and pId!=''">
+				 pid = #{pId,jdbcType=VARCHAR}
+			</if>
+			<if test="status!=null and status!=''">
+				 status = #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by seq 
+	</select>
+	<select id="selectMaxSeq" resultType="Integer">
+		select max(seq) seq from at_table_config
+	</select>
+</mapper>
