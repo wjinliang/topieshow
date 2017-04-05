@@ -42,6 +42,9 @@ public class AtFieldServiceImpl implements AtFieldService{
 			this.fieldMapper.updateByPrimaryKey(record);
 		}else{
 			record.setId(UUIDUtils.getUUID8());
+			Integer seq = this.fieldMapper.findmaxSeq(record.getTableId());
+			seq = seq==null?1:seq+1;
+			record.setaSeq(seq);
 			this.fieldMapper.insert(record);
 		}
 		
@@ -49,6 +52,19 @@ public class AtFieldServiceImpl implements AtFieldService{
 	@Override
 	public void delete(String id) {
 		this.fieldMapper.deleteByPrimaryKey(id);
+	}
+
+	@Override
+	public void seq(String id, String tid) {
+
+		AtField a = this.fieldMapper.selectByPrimaryKey(tid);
+		AtField a1 = this.fieldMapper.selectByPrimaryKey(id);
+		int seq = a.getaSeq();
+		a.setaSeq(a1.getaSeq());
+		a1.setaSeq(seq);
+		this.fieldMapper.updateByPrimaryKey(a);
+		this.fieldMapper.updateByPrimaryKey(a1);
+		
 	}
 
 	

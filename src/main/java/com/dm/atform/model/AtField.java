@@ -38,6 +38,7 @@ public class AtField {
 		Map map = new HashMap();
 		map.put("title", aTitle);
 		map.put("field", aField);
+		map.put("type", aType);
 		map.put("sort", aSort);
 		map.put("width", aWidth);
 		if (StringUtils.hasText(aFormat)) {
@@ -171,6 +172,13 @@ public class AtField {
 
 	public void setaSort(Boolean aSort) {
 		this.aSort = aSort ;
+		if(aSort!=null && aSort){
+			if(set==null){
+				set="sort";
+			}else{
+				set+=",sort";
+			}
+		}
 	}
 
 	public String getaType() {
@@ -190,6 +198,13 @@ public class AtField {
 
 	public void setGridShow(Boolean gridShow) {
 		this.gridShow = gridShow;
+		if(gridShow!=null && gridShow){
+			if(set==null){
+				set="grid";
+			}else{
+				set+=",grid";
+			}
+		}
 	}
 
 	public Boolean getDetailShow() {
@@ -201,6 +216,13 @@ public class AtField {
 
 	public void setDetailShow(Boolean detailShow) {
 		this.detailShow = detailShow;
+		if(detailShow!=null && detailShow){
+			if(set==null){
+				set="form";
+			}else{
+				set+=",form";
+			}
+		}
 	}
 
 	public Boolean getaSearch() {
@@ -212,6 +234,13 @@ public class AtField {
 
 	public void setaSearch(Boolean aSearch) {
 		this.aSearch = aSearch;
+		if(aSearch!=null && aSearch){
+			if(set==null){
+				set="search";
+			}else{
+				set+=",search";
+			}
+		}
 	}
 
 	public Integer getaSeq() {

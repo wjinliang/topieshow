@@ -12,10 +12,12 @@ public interface AtFieldService {
 	
 	List<AtField> findAll(Map map);
 
-	Object findOne(String id);
+	AtField findOne(String id);
 
 	void saveOrUpdate(AtField atField);
 
 	void delete(String id);
+
+	void seq(String id, String tid);
 
 }

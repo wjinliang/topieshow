@@ -46,6 +46,14 @@
     	order by ${sort}
     </if>
   </select>
+  <select id="findmaxSeq" resultType="Integer">
+  	select 
+    max(a_seq) a_seq
+    from at_field_config
+    <if test="tableId!=null">
+    where table_id = #{tableId,jdbcType=VARCHAR}
+    </if>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from at_field_config
     where id = #{id,jdbcType=VARCHAR}

@@ -71,7 +71,7 @@
 									</div>
 								</div>
 								<div class="portlet-body">
-									<div class="scroller" style="min-height: 289px;"
+									<div class="scroller" style="min-height: 500px;"
 										id="table_tree_div" data-always-visible="1"
 										data-rail-visible="1">
 										<ul id="table_tree" class="ztree"></ul>
@@ -137,7 +137,8 @@
 			view : {
 				showIcon : false,
 				selectedMulti : false,
-				dblClickExpand : false
+				dblClickExpand : false//,
+				//nameIsHTML:true//名称支持html格式
 			// 				addHoverDom: addHoverDom,
 			// 				removeHoverDom: removeHoverDom
 			},
@@ -466,6 +467,27 @@
 				text : '禁用',
 				value : '0'
 			} ]
+		}, {
+			type : 'checkboxGroup',//类型
+			name : 'set',//name
+			id : 'set',//id
+			label : '设置按钮',//左边label
+			cls : 'input-large',
+			items : [ {
+				text : '查看',
+				value : 'isDetail',
+				checked:true,
+				disabled:true
+			}, {
+				text : '更新',
+				value : 'isUpdate'
+			}, {
+				text : '添加',
+				value : 'isInsert'
+			}, {
+				text : '删除',
+				value : 'isDelete'
+			} ]
 		} ];
 		var tItems = [ {
 			type : 'hidden',
@@ -519,13 +541,13 @@
 		function generForm(type) {
 			modal = $.dmModal({
 				id : "siteForm",
-				title : "添加分类",
+				title : "添加",
 				distroy : true,
 				width : '850px'
 			});
 			modal.show();
 			if (type == '0') {
-				formOpts.items = aItems;
+				formOpts.items = aItems;//
 				return modal.$body.dmForm(formOpts);
 			} else {
 				formOpts.items = tItems;

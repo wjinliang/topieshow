@@ -26,7 +26,7 @@ public class CmsChannel implements Serializable {
     private String forbidden;//禁用：1  启用：0
     private Integer pageSize;//每页条数
     
-    private String url; //静态化地址
+    protected String url; //静态化地址
     
     private String mUrl;
     

@@ -3,8 +3,6 @@ package com.dm.atform.sqldao;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.dm.atform.model.AtTable;
 import com.dm.cms.model.TreeNode;
 
@@ -23,7 +21,11 @@ public interface AtTableMapper {
 
 	List<AtTable> selectByArgMap(Map map);
 
-	List<TreeNode> selectTreeNode(@Param("pId")String pid,@Param("status") String status);
+	List<TreeNode> selectTreeNode(Map map);
 
 	Integer selectMaxSeq();
+
+	Long countByArg(Map map);
+	
+	List<AtTable> selectByPid(String pid);
 }

@@ -27,7 +27,7 @@ public class ColController {
 	public String page(Model model) {
 		return "/atform/col/page";
 	}
-	@RequestMapping("list")
+	@RequestMapping("/gridlist")
 	@ResponseBody
 	public Object list(
 			@RequestParam(value = "pageNum", required = false,defaultValue="1") Integer pageNum,
@@ -38,21 +38,27 @@ public class ColController {
 		PageInfo<AtField> page = this.colService.findByArg(map);
 		return PageConvertUtil.grid(page);
 	}
-	@RequestMapping("load")
+	@RequestMapping("/load")
 	@ResponseBody
 	public Object load(String id){
 		return this.colService.findOne(id);
 	}
-	@RequestMapping("insertOrUpdate")
+	@RequestMapping("/insertOrUpdate")
 	@ResponseBody
 	public Object addOrUpdate(AtField atField){
 		this.colService.saveOrUpdate(atField);
 		return ResponseUtil.success();
 	}
-	@RequestMapping("delete")
+	@RequestMapping("/delete")
 	@ResponseBody
 	public Object delte(AtField atField){
 		this.colService.delete(atField.getId());
+		return ResponseUtil.success();
+	}
+	@RequestMapping("/seq")
+	@ResponseBody
+	public Object seq(String id,String tid){
+		this.colService.seq(id,tid);
 		return ResponseUtil.success();
 	}
 }

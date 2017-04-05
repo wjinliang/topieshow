@@ -1,5 +1,6 @@
 package com.dm.atform.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,28 +30,28 @@ public class TableController {
 	public String page(Model model) {
 		return "/atform/table/page";
 	}
-	@RequestMapping("list")
+	@RequestMapping("/gridlist")
 	@ResponseBody
 	public Object list(
 			@RequestParam(value = "pageNum", required = false,defaultValue="1") Integer pageNum,
 			@RequestParam(value = "pageSize", required = false,defaultValue="10") Integer pageSize,
 			@RequestParam(value="sort" ,required = false,defaultValue="createDate_desc") String sort,
-			AtTable atTable){
+			AtTable atTable){ 
 		Map map =new SqlParam().autoParam(atTable, sort,pageNum,pageSize);
 		PageInfo<AtTable> page = this.tableService.findByArg(map);
 		return PageConvertUtil.grid(page);
 	}
-	@RequestMapping("load")
+	@RequestMapping("/load")
 	@ResponseBody
 	public Object load(String id){
 		return this.tableService.findOne(id);
 	}
-	@RequestMapping("loadCollections")
+	@RequestMapping("/loadCollections")
 	@ResponseBody
 	public Object loadCollections(){
-		return this.mongo.loadCollections();
+		return this.mongo.loadCollections(); 
 	}
-	@RequestMapping("insertOrUpdate")
+	@RequestMapping("/insertOrUpdate")
 	@ResponseBody
 	public Object addOrUpdate(AtTable atTable){
 		this.tableService.saveOrUpdate(atTable);
@@ -64,7 +65,13 @@ public class TableController {
 	}
 	@RequestMapping("tree")
 	@ResponseBody
-	public Object tree(@RequestParam(value="tableId",required=false) String tableId,@RequestParam(value="status",required=false) String status){
-		return this.tableService.getTree(tableId,status);
+	public Object tree(@RequestParam(value="tableId",required=false) String tableId,
+			@RequestParam(value="status",required=false) String status,
+			@RequestParam(value="type",required=false) String type){
+			Map map = new HashMap();
+			map.put("pId", tableId);
+			map.put("status", status);
+			map.put("type", type);
+			return this.tableService.getTree(map);
 	}
 }

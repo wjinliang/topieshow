@@ -71,7 +71,7 @@
 									</div>
 								</div>
 								<div class="portlet-body">
-									<div class="scroller" style="min-height: 289px;"
+									<div class="scroller" style="min-height: 500px;"
 										id="table_tree_div" data-always-visible="1"
 										data-rail-visible="1">
 										<ul id="table_tree" class="ztree"></ul>
@@ -256,9 +256,9 @@
 		currentTableType = treeNode.s;
 		if(treeNode.s =='0'){
 		beforReload(currentTableId,function(data){
-			$('#gridName').html(data.gridName);
-			$('#helper').html(data.info);
-			console.log(data);
+			$('#gridName').html(data.info.gridName);
+			$('#helper').html(data.info.info);
+			//console.log(data);
 				formOpts.items = data.formItem;
 				if(typeof data.gridItem =='undefined'){
 					bootbox.alert("未配置");
@@ -270,6 +270,7 @@
 					id : data.id
 				}); 
 				formOpts.action = "./insertOrUpdate?tableId=" + currentTableId;//表单action
+		
 				var searchSize = data.searchItem.length;
 				var searchItem = {
 					rowEleNum : searchSize,
@@ -280,20 +281,117 @@
 				//console.log(data);
 				if(searchSize<=0){
 					searchItem = undefined;
-				}/* else if(searchSize<=3){
+				}else if(searchSize<=3){
 					searchItem.rowEleNum=3;
-				} */
+				}
+				var tools;
+				if(data.info.isInsert){
+					tools=inserttoolsButton;
+				}else{
+					tools=undefined;
+				}
+				var actionCloums=[];
+				
+					actionCloums.push(detailButton);
+				//console.log(data.info);
+				if(data.info.isUpdate){
+					actionCloums.push(updateButton);
+				}
+				if(data.info.isDelete){
+					actionCloums.push(deleteButton);
+				}
 				grid.reload({
 					url : "./list?tableId=" + currentTableId,
 					cloums:data.gridItem,
 					pageNum:1,
 				 	idFiled : data.id,//id域指定
-				 	search : searchItem
+				 	search : searchItem,
+				 	tools:tools,
+				 	actionCloums:actionCloums
 				});
 				//console.log(searchItem);
 			});}
 	    	
-		}
+		}; 
+		  var detailButton = {
+			text : "查看",
+			cls : "green btn-sm",
+			handle : function(index, data,id) {
+				//index为点击操作的行数
+				//data为该行的数据
+				modal = $.dmModal({
+					id : "detailForm",
+					title : "查看",
+					distroy : true,
+					width : "800px"
+				});
+				modal.show();
+				//console.log(formOpts);
+				var form = modal.$body.dmForm(formOpts);
+				//form.loadLocal(data);
+				form.loadRemote("./load?tableId="+currentTableId+"&id=" + id,function(){
+					$("#detailForm").find("input").attr("readonly","true");
+					//$(":input").attr("disabled","true");
+					$("#detailForm").find("button[role='reset']").remove();
+					$("#detailForm").find("button[role='submit']").remove();
+				});
+			}
+		};
+		var updateButton = {
+			text : "编辑",
+			cls : "green btn-sm",
+			handle : function(index, data,id) {
+				//index为点击操作的行数
+				//data为该行的数据
+				modal = $.dmModal({
+					id : "siteForm",
+					title : "表单",
+					distroy : true,
+					width : "800px"
+				});
+				modal.show();
+				//console.log(formOpts);
+				var form = modal.$body.dmForm(formOpts);
+				//form.loadLocal(data);
+				form.loadRemote("./load?tableId="+currentTableId+"&id=" + id);
+			}
+		};
+		
+		var deleteButton = {
+			text : "删除",
+			cls : "red btn-sm",
+			handle : function(index, data,id) {
+				deleteItem(id);
+			}
+		};
+		var inserttoolsButton = [
+					//工具属性
+					{
+						text : " 添 加",//按钮文本
+						cls : "btn btn-sm green",//按钮样式
+						icon : "fa fa-cubes",
+						handle : function(grid) {//按钮点击事件
+							if(currentTableType == '0'){
+								modal = $.dmModal({
+									id : "siteForm",
+									title : "添加",
+									distroy : true,
+									width : "800px"
+								});
+								modal.show();
+								var form = modal.$body.dmForm(formOpts);
+								form.loadLocal({"tableId":currentTableId});
+							}else{
+								bootbox("请选择数据表!");
+							}
+						}
+					}/* , {
+						text : " 删 除",
+						cls : "btn btn-sm red ",//按钮样式
+						handle : function(grid) {
+							deleteItems(grid.getSelectIds());
+						}
+					} */ ];
 		var gridOption = {
 			url : "./list", // ajax地址
 			pageNum : 1,//当前页码
@@ -319,60 +417,8 @@
 					}
 					 ],
 			actionCloumText : "操作",//操作列文本
-			actionCloumWidth : "30%",
-			actionCloums : [ {
-				text : "编辑",
-				cls : "green btn-sm",
-				handle : function(index, data,id) {
-					//index为点击操作的行数
-					//data为该行的数据
-					modal = $.dmModal({
-						id : "siteForm",
-						title : "表单",
-						distroy : true,
-						width : "800px"
-					});
-					modal.show();
-					//console.log(formOpts);
-					var form = modal.$body.dmForm(formOpts);
-					//form.loadLocal(data);
-					form.loadRemote("./load?tableId="+currentTableId+"&id=" + id);
-				}
-			}, {
-				text : "删除",
-				cls : "red btn-sm",
-				handle : function(index, data,id) {
-					deleteItem(id);
-				}
-			} ],
-			tools : [
-			//工具属性
-			{
-				text : " 添 加",//按钮文本
-				cls : "btn btn-sm green",//按钮样式
-				icon : "fa fa-cubes",
-				handle : function(grid) {//按钮点击事件
-					if(currentTableType == '0'){
-						modal = $.dmModal({
-							id : "siteForm",
-							title : "添加",
-							distroy : true,
-							width : "800px"
-						});
-						modal.show();
-						var form = modal.$body.dmForm(formOpts);
-						form.loadLocal({"tableId":currentTableId});
-					}else{
-						bootbox("请选择数据表!");
-					}
-				}
-			}/* , {
-				text : " 删 除",
-				cls : "btn btn-sm red ",//按钮样式
-				handle : function(grid) {
-					deleteItems(grid.getSelectIds());
-				}
-			} */ ]
+			actionCloumWidth : "25%",
+			actionCloums:[detailButton]
 		};
 		var modal;
 		var formOpts = {

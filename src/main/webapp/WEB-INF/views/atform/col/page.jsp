@@ -71,7 +71,7 @@
 									</div>
 								</div>
 								<div class="portlet-body">
-									<div class="scroller" style="min-height: 289px;"
+									<div class="scroller" style="min-height: 500px;"
 										id="table_tree_div" data-always-visible="1"
 										data-rail-visible="1">
 										<ul id="table_tree" class="ztree"></ul>
@@ -246,13 +246,13 @@
 		var gridOption = {
 			url : "./list", // ajax地址
 			pageNum : 1,//当前页码
-			pageSize : 5,//每页显示条数
+			pageSize : 15,//每页显示条数
 			idFiled : "id",//id域指定
 			showCheckbox : true,//是否显示checkbox
 			checkboxWidth : "3%",
 			showIndexNum : true,
 			indexNumWidth : "5%",
-			pageSelect : [ 2, 15, 30, 50 ],
+			pageSelect : [ 5, 15, 30, 50 ],
 			cloums : [
 					{
 						title : "名称",
@@ -285,7 +285,7 @@
 						}
 					} ],
 			actionCloumText : "操作",//操作列文本
-			actionCloumWidth : "30%",
+			actionCloumWidth : "20%",
 			actionCloums : [ {
 				text : "编辑",
 				cls : "green btn-sm",

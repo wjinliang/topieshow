@@ -25,7 +25,9 @@
 
     
      <context:property-placeholder
-            location="classpath*:config/properties/dm.properties,classpath*:config/properties/jdbc.properties,classpath*:config/properties/mail.properties,classpath*:config/properties/cms.properties,classpath*:config/properties/webservice.properties"/>    
+            location="classpath*:config/properties/*.properties"/>    
+<!-- <context:property-placeholder -->
+<!--             location="classpath*:config/properties/dm.properties,classpath*:config/properties/jdbc.properties,classpath*:config/properties/mail.properties,classpath*:config/properties/cms.properties,classpath*:config/properties/webservice.properties"/>     -->
 
     <bean id="cacheManager"
           class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
@@ -137,7 +139,7 @@
     <context:annotation-config/>
     <!-- 使用 annotation 自动注册bean,并检查@Controller, @Service, @Repository注解已被注入 -->
     <context:component-scan
-            base-package="com.dm.*.handler,com.dm.platform.aop,com.dm.platform.dao,com.dm.*.service"/>
+            base-package="com.dm.*.handler,com.dm.platform.aop,com.dm.platform.dao,com.dm.**.service,com.dm.**.dao"/>
 
     <!-- 配置事务管理 -->
     <bean id="transactionManager"
@@ -186,21 +188,22 @@
 	
 	<mongo:db-factory id="mongoDbFactory" dbname="${mongo.dbName}" mongo-ref="mongo" /><!-- username="${mongo.user}" password="${mongo.password}" -->
 	
-	<!-- <bean id="defaultMongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+	<bean id="defaultMongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
 		<constructor-arg name="typeKey">
 			<null />
 		</constructor-arg> 
-	</bean>   -->
+	</bean>  
 	
 	<!-- mongodb 的实体映射器  根据注释，把它们作为mongodb的一个collection的映射-->
-	<!--  <mongo:mapping-converter id="mongoConverter" base-package="com.dm.cms.model" db-factory-ref="mongoDbFactory" type-mapper-ref="defaultMongoTypeMapper"/>
-	 -->
+	  <mongo:mapping-converter id="mongoConverter" base-package="com.dm.app.dilixinxi.jichushujuguanli.model" db-factory-ref="mongoDbFactory" /><!-- type-mapper-ref="defaultMongoTypeMapper"/> -->
+	 
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg ref="mongoDbFactory"/>
-		<!-- <constructor-arg ref="mongoConverter"/>  -->
+		   <constructor-arg ref="mongoConverter"/> 
 		<property name="writeConcern" value="${mongo.writeConcern}" />
 	</bean> 
 	  
+    <import resource="classpath*:/config/spring/spring-*.xml"/>
 	<!-- mongodb bean的仓库目录,使用springdata时用此, 会自动扫描扩展了MongoRepository接口的接口进行注入-->
 <!-- 	<mongo:repositories base-package="com.xkw.xy360.repository.mongo"/> -->
     

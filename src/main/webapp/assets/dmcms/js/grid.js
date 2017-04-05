@@ -283,6 +283,7 @@
                     }
                     button.after("&nbsp;");
                 });
+                this.$toolsEle = toolRow;
             }
         },
         // 渲染搜索栏
@@ -627,26 +628,26 @@
             }
             if(hide){
             	showBtn = $.tmpl(Grid.statics.buttonTmpl, {
-                    "class_": "btn blue",
+                    "class_": "btn btn-sm blue",
                     "text_": "显示搜索面板",
                     "title_": "显示",
                     "type_": "button"
                 }).show();
                 hideBtn = $.tmpl(Grid.statics.buttonTmpl, {
-                    "class_": "btn yellow",
+                    "class_": "btn btn-sm yellow",
                     "text_": "隐藏搜索面板",
                     "title_": "隐藏",
                     "type_": "button"
                 }).hide();
             }else{
 	            showBtn = $.tmpl(Grid.statics.buttonTmpl, {
-	                "class_": "btn blue",
+	                "class_": "btn btn-sm blue",
 	                "text_": "显示搜索面板",
 	                "title_": "显示",
 	                "type_": "button"
 	            }).hide();
 	            hideBtn = $.tmpl(Grid.statics.buttonTmpl, {
-	                "class_": "btn yellow",
+	                "class_": "btn btn-sm yellow",
 	                "text_": "隐藏搜索面板",
 	                "title_": "隐藏",
 	                "type_": "button"
@@ -666,7 +667,7 @@
                 hideBtn.toggle();
             });
             var resetbtn = $.tmpl(Grid.statics.buttonTmpl, {
-                "class_": "btn default",
+                "class_": "btn btn-sm default",
                 "text_": "重置",
                 "title_": "重置",
                 "type_": "reset"
@@ -675,7 +676,7 @@
             resetbtn.after("&nbsp;");
 
             var searchbtn = $.tmpl(Grid.statics.buttonTmpl, {
-                "class_": "btn blue",
+                "class_": "btn btn-sm blue",
                 "text_": " 搜索",
                 "title_": "搜索",
                 "type_": "button"
@@ -859,6 +860,7 @@
                     tr.append(td);
                 });
                 if (that._actionCloums != undefined) {
+                	//console.log(that._actionCloums);
                     var cltd = $.tmpl(tdTmpl, {});
                     var _index = index;
                     var current_data = grid;
@@ -1254,7 +1256,12 @@
             		this._options.cloums=[];//20161219 清空原来的列wjl
             		this._searchInited = false;//如果列改变 searchForm要重新生成
             		this._options.search=[];
-            		if(this.$searchForm)this.$searchForm.remove();
+            		this._options.tools=[];
+            		this._toolsInited = false;
+            		if(this.$toolsEle)
+            			this.$toolsEle.remove();
+            		if(this.$searchForm)
+            			this.$searchForm.remove();
             	}
                 this._options = $.extend(true, {}, this._options, options);
                 this._setOptions(this._options, this);

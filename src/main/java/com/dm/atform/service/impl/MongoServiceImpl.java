@@ -25,6 +25,7 @@ import com.github.pagehelper.PageInfo;
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -33,6 +34,7 @@ import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceOutput;
 import com.mongodb.Mongo;
 import com.mongodb.QueryBuilder;
+import com.mongodb.QueryOperators;
 import com.mongodb.WriteConcern;
 
 @Service
@@ -130,18 +132,23 @@ public class MongoServiceImpl implements MongoService {
 	/**
 	 * 获取表中所有记录条数
 	 */
-	public void count(AtTable atTable) {
-		System.out.println(getColl(atTable).getCount());
-		System.out.println(getColl(atTable).count());
+	public long count(AtTable atTable) {
+		return getColl(atTable).getCount();
 	}
 
 	/**
 	 * 获取查询结果集的记录数
 	 */
-	public void getCount(AtTable atTable) {
-		DBObject query = new BasicDBObject("name", "a");
+	public long getCount(AtTable atTable,DBObject query) {
 		long count = getColl(atTable).count(query);
-		System.out.println(count);
+		return count;
+	}
+	/**
+	 * 获取查询结果集的记录数
+	 */
+	public long getCount(AtTable atTable) {
+		long count = getColl(atTable).count();
+		return count;
 	}
 
 	/**
@@ -377,12 +384,31 @@ public class MongoServiceImpl implements MongoService {
 			e.printStackTrace();
 		}
 	}
-
+	public void groupByManyFiled1(AtTable atTable){
+		//this.getColl(atTable).aggregate(firstOp, additionalOps)
+	}
+	public void GroupByManyField1() throws UnknownHostException {
+		// 此方法没有运行成功
+		Mongo mongo = new Mongo("localhost", 27017);
+		DB db = mongo.getDB("datamanage");
+		DBCollection books = db.getCollection("m_ST_REG_VILLAGE");
+		BasicDBObject groupKeys = new BasicDBObject();
+		groupKeys.put("_id", "$SZ_QX");
+		groupKeys.put("village_count", new BasicDBObject().append("$sum", 1));
+		
+		AggregationOutput ouput = books.aggregate(new BasicDBObject("$group",
+				groupKeys));
+		System.out.println(ouput.getCommandResult());
+	}
+	public static void main(String[] args) throws UnknownHostException {
+		new MongoServiceImpl().GroupByManyField1();
+		
+	}
 	public void GroupByManyField() throws UnknownHostException {
 		// 此方法没有运行成功
 		Mongo mongo = new Mongo("localhost", 27017);
-		DB db = mongo.getDB("libary");
-		DBCollection books = db.getCollection("books");
+		DB db = mongo.getDB("datamanage");
+		DBCollection books = db.getCollection("m_ST_REG_VILLAGE");
 		BasicDBObject groupKeys = new BasicDBObject();
 		groupKeys.put("total", new BasicDBObject("$sum", "pages"));
 
@@ -464,6 +490,8 @@ public class MongoServiceImpl implements MongoService {
 			Integer pageSize, Map<String, Object> map, String sort) {
 		DBCollection coll = getColl(atTable);
 		BasicDBObject query = new BasicDBObject();
+		String where = atTable.getWhereField();
+		activeQueryWhere(where,query);
 		for (Entry<String, Object> i : map.entrySet()) {
 			String key = i.getKey();
 			if (staticWords.contains(key)) {
@@ -471,6 +499,7 @@ public class MongoServiceImpl implements MongoService {
 			}
 			Pattern john = Pattern.compile(i.getValue() + "+");
 			query.put(key, john);
+			
 			/*
 			 * if (isChinese(i.getValue().toString())) { Pattern john =
 			 * Pattern.compile(i.getValue() + "+"); query.put(key, john); } else
@@ -487,7 +516,11 @@ public class MongoServiceImpl implements MongoService {
 		DBCursor cursor ;
 		long totalCount = coll.count(query);
 		BasicDBObject ord = new BasicDBObject();
+		if(!StringUtils.hasText(sort)){
+			sort = atTable.getSortField();
+		}
 		if (StringUtils.hasText(sort)) {
+			
 			String f = sort.substring(0, sort.lastIndexOf("_"));
 			int ad = sort.substring(sort.lastIndexOf("_") + 1).equals("asc") ? 1
 					: -1;
@@ -499,6 +532,7 @@ public class MongoServiceImpl implements MongoService {
 				fields.put(f.getaField(), "1");
 			}
 			fields.put(atTable.getIdField(), "1");
+			
 			 cursor = coll.find(query, fields).skip(skip)
 					.sort(ord).limit(pageSize);
 		}else{
@@ -525,6 +559,135 @@ public class MongoServiceImpl implements MongoService {
 			PageInfo page = new PageInfo(p);
 			return page;
 		}
+	}
+	
+	/**
+	 * 默认数据展示 - 没有分页
+	 * AND多条件查询,等于  
+	 */
+	@Override
+	public PageInfo queryMulti1(AtTable atTable, Integer pageNum,
+			Integer pageSize, Map<String, Object> map, String sort) {
+		
+		String quer = atTable.getShowDataQuery();
+		if(StringUtils.isEmpty(quer)){
+			return queryMulti(atTable, pageNum, pageSize, map, sort);
+		}
+		CommandResult commandResult ;
+		BasicDBObject query = new BasicDBObject();
+		String where = atTable.getWhereField();
+		activeQueryWhere(where,query);
+		for (Entry<String, Object> i : map.entrySet()) {
+			String key = i.getKey();
+			if (staticWords.contains(key)) {
+				continue;
+			}
+			Pattern john = Pattern.compile(i.getValue() + "+");
+			query.put(key, john);
+		}
+		long totalCount = template.getCollection(atTable.getTableName()).count(query);
+		try{
+			commandResult = this.template.executeCommand(quer);
+			BasicDBList list = (BasicDBList)((BasicDBObject)commandResult.get("cursor")).get("firstBatch"); 
+			
+			if(list.size()>30){
+				list = (BasicDBList) list.subList(0, 30);
+			}
+			
+			Page p = new Page();
+			p.addAll(list);
+			p.setPageNum(pageNum);
+			p.setPageSize(pageSize);
+			p.setTotal(totalCount);
+			PageInfo pageInfo = new PageInfo(p);
+			return pageInfo;
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * AND多条件查询,等于
+	 */
+	@Override
+	public PageInfo queryMulti2(AtTable atTable, Integer pageNum,
+			Integer pageSize,String fileds, Map<String, Object> map, String sort) {
+		DBCollection coll = getColl(atTable);
+		BasicDBObject query = new BasicDBObject();
+		DBCursor cursor ;
+		int skip = (pageNum - 1) * pageSize;
+		BasicDBObject fields = null; 
+		if(StringUtils.hasText(fileds)){
+			fields= new BasicDBObject();
+			String[] fs = fileds.split(",");
+			for(String val:fs){
+				fields.append(val, "1");
+			}
+			cursor = coll.find(query,fields).skip(skip).limit(pageSize);
+		}else{
+			cursor = coll.find(query).skip(skip).limit(pageSize);
+		}
+		
+		List result = new ArrayList();
+		try {
+			while (cursor.hasNext()) {
+				// System.out.println(cursor.next());
+				DBObject o = cursor.next();
+				o.removeField("_id");
+				/*
+				 * String id = o.get("_id").toString(); o.put("id", id);
+				 */
+				result.add(o);
+
+			}
+		} finally {
+			cursor.close();
+			Page p = new Page();
+			p.addAll(result);
+			p.setPageNum(pageNum);
+			p.setPageSize(pageSize);
+			PageInfo page = new PageInfo(p);
+			return page;
+		}
+	}
+	private void activeQueryWhere(String where, BasicDBObject query) {
+		if(where==null) return;
+		String[] wheres = where.split(";");
+		for(String w : wheres){
+			String[] ws = w.split("!=");
+			if(ws.length==2){
+				query.append(ws[0], new BasicDBObject().append(QueryOperators.NE,ws[1]));
+				continue;
+			}
+			ws = w.split(">=");
+			if(ws.length==2){
+				query.append(ws[0], new BasicDBObject().append(QueryOperators.GTE,ws[1]));
+				continue;
+			}
+			ws = w.split("<=");
+			if(ws.length==2){
+				query.append(ws[0], new BasicDBObject().append(QueryOperators.LTE,ws[1]));
+				continue;
+			}
+			ws = w.split(">");
+			if(ws.length==2){
+				query.append(ws[0], new BasicDBObject().append(QueryOperators.GT,ws[1]));
+				continue;
+			}
+			ws = w.split("<");
+			if(ws.length==2){
+				query.append(ws[0], new BasicDBObject().append(QueryOperators.LT,ws[1]));
+				continue;
+			}
+			ws = w.split("=");
+			if(ws.length==2){
+				query.append(ws[0], ws[1]);
+				continue;
+			}
+		}
+		
+		
 	}
 
 	@Override
@@ -614,6 +777,7 @@ public class MongoServiceImpl implements MongoService {
 			Map map = new HashMap();
 			map.put("text", s);
 			map.put("value", s);
+			System.out.println(s+"=====");
 			list.add(map);
 		}
 		return list;

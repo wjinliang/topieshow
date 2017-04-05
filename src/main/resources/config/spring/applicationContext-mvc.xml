@@ -10,9 +10,10 @@
 		location="classpath*:config/properties/*.properties" />
 
 	<!-- 注解扫描包 -->
-	<context:component-scan base-package="com.dm.*.controller,com.dm.*.service" />
+	<context:component-scan base-package="com.dm.**.controller,com.dm.**.service.impl" />
 	<!-- 开启AOP自动代理 -->
 	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<bean id="redisCache" class="com.dm.atform.util.RedisCache"></bean>
 	<!-- 开启注解 -->
 	<!-- <mvc:annotation-driven/> -->
 	<!-- 静态资源(js/image)的访问 -->
@@ -67,7 +68,6 @@
 		<property name="suffix" value=".jsp" />
 		<property name="order" value="1" />
 	</bean>
-
 	<!-- 配置freeMarker的模板路径 -->
 	<bean id="freemarkerConfig"
 		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
@@ -106,7 +106,15 @@
 				<entry key="microcobolListDirective" value-ref="microcobolListDirective"></entry>
 				<entry key="orgPersonDirective" value-ref="orgPersonDirective"></entry>
 				<entry key="leaderContentListDirective" value-ref="leaderContentListDirective"></entry>
-
+				<!-- 涉农前台自定义标签 -->
+				<entry key="cunqingItemCountDirective" value-ref="cunqingItemCountDirective"></entry>
+				<entry key="cunqingItemInfoDirective" value-ref="cunqingItemInfoDirective"></entry>
+				<entry key="mongoDataListDirective" value-ref="mongoDataListDirective"></entry>
+				<entry key="tableListDirective" value-ref="tableListDirective"></entry>
+				<entry key="dataResourceRecordDirective" value-ref="dataResourceRecordDirective"></entry>
+				<entry key="directoryNumberDirective" value-ref="directoryNumberDirective"></entry>
+				<entry key="sysDataCountDirective" value-ref="sysDataCountDirective"></entry>
+				
 			</map>
 		</property>
 		<property name="defaultEncoding">
@@ -150,12 +158,22 @@
 	<bean id="websurveyListDirective" class="com.dm.cms.directive.WebsurveyListDirective" />
    <bean id="topOneDirective" class="com.dm.cms.directive.TopOneDirective"/>
    <bean id="pictureListDirective" class="com.dm.cms.directive.PictureListDirective"/>
+   <bean id="leaderContentListDirective" class="com.dm.cms.directive.LeaderContentListDirective"></bean>
+   
    <bean id="microcobolListDirective" class ="com.dm.module.directive.MicrocobolListDirective"></bean>
    <bean id="orgPersonDirective" class ="com.dm.module.directive.OrgPersonListDirective"></bean>
-   <bean id="leaderContentListDirective" class="com.dm.cms.directive.LeaderContentListDirective"></bean>
+   
     <!-- 自定义标签结束 -->
-
-
+  <!-- 涉农前台自定义标签 -->
+ <bean id="cunqingItemCountDirective" class ="com.dm.app.datatopic.cunqing.cunqinginfo.directive.CunqingItemInfoDirective"></bean>
+ <bean id="cunqingItemInfoDirective" class ="com.dm.app.datatopic.cunqing.cunqinginfo.directive.CunqingItemInfoDirective"></bean>
+ <bean id="mongoDataListDirective" class="com.dm.atform.directive.MongoDataListDirective"></bean>
+ <bean id="tableListDirective" class="com.dm.atform.directive.AtTableListDirective"></bean>
+ <bean id="directoryNumberDirective" class="com.dm.atform.directive.DirectoryNumberDirective"></bean>
+ <bean id="dataResourceRecordDirective" class="com.dm.atform.directive.DataResourceRecordDirective"></bean>
+ <bean id="sysDataCountDirective" class="com.dm.atform.directive.SysDataCountDirective"></bean>
+ 
+ <!-- 涉农前台自定义标签结束 -->
 	<!-- json格式设置 -->
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
